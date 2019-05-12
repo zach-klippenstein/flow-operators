@@ -15,7 +15,7 @@ import kotlin.test.*
 class ReplayTest {
 
     @Test
-    fun `doesn't emit until connected`() = runTest {
+    fun doesntEmitUntilConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.replayMostRecent()
         val collector = transformed.collectIn(this)
@@ -28,7 +28,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `emits after connected`() = runTest {
+    fun emitsAfterConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.replayMostRecent()
         val collector = transformed.collectIn(this)
@@ -41,7 +41,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `replays to late collectors`() = runTest {
+    fun replaysToLateCollectors() = runTest {
         val emitted = CompletableDeferred<Unit>()
         val source = flow {
             emit(0)
@@ -62,7 +62,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `stops replaying after completion`() = runTest {
+    fun stopsReplayingAfterCompletion() = runTest {
         val emitted = CompletableDeferred<Unit>()
         val source = flow {
             emit(0)
@@ -83,7 +83,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `drops stale elements`() = runTest {
+    fun dropsStaleElements() = runTest {
         val emitted = CompletableDeferred<Unit>()
         val source = flow {
             emit(0)
@@ -105,7 +105,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `emits new elements after replaying`() = runTest {
+    fun emitsNewElementsAfterReplaying() = runTest {
         val emitted = CompletableDeferred<Unit>()
         val emitNext = CompletableDeferred<Unit>()
         val source = flow {
@@ -131,7 +131,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `stops emitting after disconnected`() = runTest {
+    fun stopsEmittingAfterDisconnected() = runTest {
         val source = Channel<Int>(capacity = 0)
         val transformed = source.replayMostRecentAsFlow()
         val connection = transformed.connectIn(this)
@@ -151,7 +151,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `cache preserved between disconnections`() = runTest {
+    fun cachePreservedBetweenDisconnections() = runTest {
         val source = Channel<Int>(capacity = 0)
         val transformed = source.replayMostRecentAsFlow()
         val connection = transformed.connectIn(this)
@@ -168,7 +168,7 @@ class ReplayTest {
     }
 
     @Test
-    fun `cache discarded between disconnections`() = runTest {
+    fun cacheDiscardedBetweenDisconnections() = runTest {
         val source = Channel<Int>(capacity = 0)
         val transformed = source.replayMostRecentAsFlow(preserveCacheBetweenConnections = false)
         val connection = transformed.connectIn(this)

@@ -13,7 +13,7 @@ import kotlin.test.*
 class PublishTest {
 
     @Test
-    fun `doesn't emit until connected`() = runTest {
+    fun doesntEmitUntilConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.publish()
         val collector = transformed.collectIn(this)
@@ -26,7 +26,7 @@ class PublishTest {
     }
 
     @Test
-    fun `emits after connected`() = runTest {
+    fun emitsAfterConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.publish()
         val collector = transformed.collectIn(this)
@@ -39,7 +39,7 @@ class PublishTest {
     }
 
     @Test
-    fun `emits new elements after connecting`() = runTest {
+    fun emitsNewElementsAfterConnecting() = runTest {
         val emitted = CompletableDeferred<Unit>()
         val emitNext = CompletableDeferred<Unit>()
         val source = flow {
@@ -65,7 +65,7 @@ class PublishTest {
     }
 
     @Test
-    fun `stops emitting after disconnected`() = runTest {
+    fun stopsEmittingAfterDisconnected() = runTest {
         val source = Channel<Int>(capacity = 0)
         val transformed = source.consumeAsFlow()
             .publish()
