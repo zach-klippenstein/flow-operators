@@ -16,7 +16,7 @@ class PublishTest {
     fun doesntEmitUntilConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.publish()
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
 
         yield()
         assertNull(collector.poll())
@@ -29,7 +29,7 @@ class PublishTest {
     fun emitsAfterConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.publish()
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
         val connection = transformed.connectIn(this)
 
         assertEquals(0, collector.receive())
@@ -53,7 +53,7 @@ class PublishTest {
 
         emitted.await()
 
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
         assertNull(collector.poll())
 
         emitNext.complete(Unit)
@@ -70,7 +70,7 @@ class PublishTest {
         val transformed = source.consumeAsFlow()
             .publish()
         val connection = transformed.connectIn(this)
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
 
         assertNull(collector.poll())
         assertTrue(source.offer(0))

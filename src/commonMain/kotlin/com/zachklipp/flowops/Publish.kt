@@ -39,7 +39,7 @@ fun <T> Flow<T>.publish(downstreamBufferSize: Int = 16): FlowTap<T> =
 internal open class PublishFlowTap<T>(
     private val upstream: Flow<T>,
     private val downstreamBufferSize: Int
-) : FlowTap<T> {
+) : FlowTap<T>, Flow<T> {
 
     private var isConnected = false
 
@@ -62,6 +62,8 @@ internal open class PublishFlowTap<T>(
      * platform-specific implementations may be.
      */
     private var downstreamFlows: Set<SendChannel<T>> = emptySet()
+
+    override val flow: Flow<T> get() = this
 
     /**
      * Called whenever the upstream [Flow] emits a new element.

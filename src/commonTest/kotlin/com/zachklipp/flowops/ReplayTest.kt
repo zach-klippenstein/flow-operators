@@ -18,7 +18,7 @@ class ReplayTest {
     fun doesntEmitUntilConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.replayMostRecent()
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
 
         yield()
         assertNull(collector.poll())
@@ -31,7 +31,7 @@ class ReplayTest {
     fun emitsAfterConnected() = runTest {
         val source = flowOf(0)
         val transformed = source.replayMostRecent()
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
         val connection = transformed.connectIn(this)
 
         assertEquals(0, collector.receive())
@@ -53,7 +53,7 @@ class ReplayTest {
 
         emitted.await()
 
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
         assertEquals(0, collector.receive())
 
         // Don't leak.
@@ -73,7 +73,7 @@ class ReplayTest {
 
         emitted.await()
 
-        transformed.collect {
+        transformed.flow.collect {
             fail("Expected no elements.")
         }
         // Success!
@@ -96,7 +96,7 @@ class ReplayTest {
 
         emitted.await()
 
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
         assertEquals(1, collector.receive())
 
         // Don't leak.
@@ -119,7 +119,7 @@ class ReplayTest {
 
         emitted.await()
 
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
         assertEquals(0, collector.receive())
 
         emitNext.complete(Unit)
@@ -135,7 +135,7 @@ class ReplayTest {
         val source = Channel<Int>(capacity = 0)
         val transformed = source.replayMostRecentAsFlow()
         val connection = transformed.connectIn(this)
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
 
         assertNull(collector.poll())
         assertTrue(source.offer(0))
@@ -159,7 +159,7 @@ class ReplayTest {
         source.send(0)
         connection.cancel()
 
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
 
         assertEquals(0, collector.receive())
 
@@ -176,7 +176,7 @@ class ReplayTest {
         source.send(0)
         connection.cancel()
 
-        val collector = transformed.collectIn(this)
+        val collector = transformed.flow.collectIn(this)
 
         assertNull(collector.poll())
 
