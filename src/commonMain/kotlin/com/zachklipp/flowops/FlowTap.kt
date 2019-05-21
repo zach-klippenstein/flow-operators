@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
  * A [Flow] that won't collect the upstream flow until it is explicitly [connected][connectAndJoin].
  */
 @FlowPreview
-interface ConnectableFlow<out T> : Flow<T> {
+interface FlowTap<out T> : Flow<T> {
 
     /**
      * Connects to the upstream [Flow] and suspends until it completes.
@@ -27,6 +27,6 @@ interface ConnectableFlow<out T> : Flow<T> {
      * @see connectAndJoin
      */
     fun connectIn(scope: CoroutineScope): Job = scope.launch {
-        this@ConnectableFlow.connectAndJoin()
+        this@FlowTap.connectAndJoin()
     }
 }
