@@ -8,32 +8,32 @@ import kotlinx.coroutines.flow.FlowCollector
 /**
  * Broadcasts this [Flow], immediately emitting the last-seen value to new collectors.
  *
- * The returned [Flow] is a [ConnectableFlow], which means it won't collect from
- * the upstream [Flow] until it is [connected][ConnectableFlow.connectIn]. After being connected, it will
+ * The returned [Flow] is a [FlowTap], which means it won't collect from
+ * the upstream [Flow] until it is [connected][FlowTap.connectIn]. After being connected, it will
  * collect only once from the upstream [Flow] for every downstream collector. Every element emitted by
  * the upstream [Flow] will be emitted to each downstream [Flow]. This is similar to `BroadcastChannel`, but
- * won't start broadcasting until it is explicitly connected. The returned [ConnectableFlow] can also be
+ * won't start broadcasting until it is explicitly connected. The returned [FlowTap] can also be
  * disconnected by cancelling the connector coroutine, which will stop collecting from upstream. Disconnecting
  * will not cause downstream [Flow]s to complete.
  *
- * Upstream values will not start getting cached until the [ConnectableFlow] is connected.
+ * Upstream values will not start getting cached until the [FlowTap] is connected.
  *
  * @param downstreamBufferSize The capacity of the buffers used to send elements to downstream flows. If any
  * downstream collector is slow and exerts backpressure by letting its buffer fill up, the backpressure will
  * be propagated to the upstream [Flow]. Use a larger value here to prevent that from happening, or a smaller
  * value to increase backpressure sensitivity.
  * @param preserveCacheBetweenConnections
- * If true (the default), the last-seen value will be saved after the [ConnectableFlow] is disconnected, and
+ * If true (the default), the last-seen value will be saved after the [FlowTap] is disconnected, and
  * will be immediately emitted to new collectors.
  * If false, the cache will be cleared on disconnection, and new collectors won't receive a value until the
- * [ConnectableFlow] is reconnected and the upstream [Flow] emits an element.
+ * [FlowTap] is reconnected and the upstream [Flow] emits an element.
  */
 @FlowPreview
 fun <T> Flow<T>.replayMostRecent(
     downstreamBufferSize: Int = 16,
     preserveCacheBetweenConnections: Boolean = true
-): ConnectableFlow<T> =
-    ReplayMostRecentConnectableFlow(this, downstreamBufferSize, preserveCacheBetweenConnections)
+): FlowTap<T> =
+    ReplayMostRecentFlowTap(this, downstreamBufferSize, preserveCacheBetweenConnections)
 
 /**
  * Consumes this [ReceiveChannel] by broadcasting its elements to downstream collectors, starting with the
@@ -43,14 +43,14 @@ fun <T> Flow<T>.replayMostRecent(
 fun <T> ReceiveChannel<T>.replayMostRecentAsFlow(
     downstreamBufferSize: Int = 16,
     preserveCacheBetweenConnections: Boolean = true
-): ConnectableFlow<T> = consumeAsFlow().replayMostRecent(downstreamBufferSize, preserveCacheBetweenConnections)
+): FlowTap<T> = consumeAsFlow().replayMostRecent(downstreamBufferSize, preserveCacheBetweenConnections)
 
 @FlowPreview
-private class ReplayMostRecentConnectableFlow<T>(
+private class ReplayMostRecentFlowTap<T>(
     upstream: Flow<T>,
     downstreamBufferSize: Int,
     private val preserveCacheBetweenConnections: Boolean
-) : PublishConnectableFlow<T>(upstream, downstreamBufferSize) {
+) : PublishFlowTap<T>(upstream, downstreamBufferSize) {
 
     /**
      * Used to distinguish a missing element from a null element in [lastElement].

@@ -16,11 +16,11 @@ import kotlinx.coroutines.withContext
 /**
  * Broadcasts this [Flow].
  *
- * The returned [Flow] is a [ConnectableFlow], which means it won't collect from
- * the upstream [Flow] until it is [connected][ConnectableFlow.connectIn]. After being connected, it will
+ * The returned [Flow] is a [FlowTap], which means it won't collect from
+ * the upstream [Flow] until it is [connected][FlowTap.connectIn]. After being connected, it will
  * collect only once from the upstream [Flow] for every downstream collector. Every element emitted by
  * the upstream [Flow] will be emitted to each downstream [Flow]. This is similar to [BroadcastChannel], but
- * won't start broadcasting until it is explicitly connected. The returned [ConnectableFlow] can also be
+ * won't start broadcasting until it is explicitly connected. The returned [FlowTap] can also be
  * disconnected by cancelling the connector coroutine, which will stop collecting from upstream. Disconnecting
  * will not cause downstream [Flow]s to complete.
  *
@@ -32,14 +32,14 @@ import kotlinx.coroutines.withContext
  * @see replayMostRecent
  */
 @FlowPreview
-fun <T> Flow<T>.publish(downstreamBufferSize: Int = 16): ConnectableFlow<T> =
-    PublishConnectableFlow(this, downstreamBufferSize)
+fun <T> Flow<T>.publish(downstreamBufferSize: Int = 16): FlowTap<T> =
+    PublishFlowTap(this, downstreamBufferSize)
 
 @FlowPreview
-internal open class PublishConnectableFlow<T>(
+internal open class PublishFlowTap<T>(
     private val upstream: Flow<T>,
     private val downstreamBufferSize: Int
-) : ConnectableFlow<T> {
+) : FlowTap<T> {
 
     private var isConnected = false
 
