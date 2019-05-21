@@ -7,10 +7,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 /**
- * A [Flow] that won't collect the upstream flow until it is explicitly [connected][connectAndJoin].
+ * Represents a [Flow] that won't collect the upstream flow until it is explicitly [connected][connectAndJoin].
  */
 @FlowPreview
-interface FlowTap<out T> : Flow<T> {
+interface FlowTap<out T> {
+
+    /**
+     * The actual [Flow] instance that won't start emitting until this tap is [connected][connectAndJoin].
+     */
+    val flow: Flow<T>
 
     /**
      * Connects to the upstream [Flow] and suspends until it completes.
